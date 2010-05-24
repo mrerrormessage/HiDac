@@ -14,6 +14,7 @@ Agent::Agent( Json::Value a ){
   isColliding = false; 
   
   v2fMult(force, 0.0, force);
+
   v2fMult(vel, 0.0, vel);
   v2fMult(repelForce, 0.0, repelForce);
   v2fMult(norm, 0.0, norm);
@@ -130,7 +131,10 @@ void Agent::calculateForces (){
   float perceivedDensity = 1.0;
 
   //running total vector
-  v2f rt; 
+  v2f rt;
+  v2fMult(rt, 0.0, rt);
+  
+
 
   //copy the last force in (term 1 in equation)
   v2fCopy(force, rt);
@@ -138,7 +142,9 @@ void Agent::calculateForces (){
   //Force towards attractor
   v2f dtoattractor;
   attractor.getDirection( pos, dtoattractor );
+  v2fPrint( "dtoa: ", dtoattractor);
   v2fNormalize( dtoattractor , dtoattractor );
+
   v2fMult(dtoattractor, attractorWeight, dtoattractor);
   v2fAdd( rt, dtoattractor, rt);
 
@@ -196,13 +202,16 @@ void Agent::calculateForces (){
     default: 
       break;
     }
-
+    
      v2fAdd(rt, tempForce, rt);
+
   }
+
   v2fCopy(rt, force);
   //maybe copy a normalized force into norm? 
   v2fCopy(force, norm);
   v2fNormalize(norm, norm);
+
 
   //need to add repulsion forces as well. Will test shortly then add
   v2fMult( repelForce, 0.0, repelForce);
@@ -238,12 +247,20 @@ void Agent::applyForces( float deltaT ){
   //compute normal movement forces
   v2f fallen;
   computeFallen(fallen);
-  v2f normalMove, movement; 
+  v2f normalMove, movement;
+ 
   float moveFactor = computeAlpha() * computeVel(deltaT) * deltaT;
+  v2fPrint( "force: ", force );
   v2fMult(force, (1.0 - Beta), normalMove);
+
+
+
   v2fMult(fallen, Beta, fallen);
   v2fAdd(fallen, normalMove, movement);
   v2fMult(movement, moveFactor, movement);
+  std::cout << "moving: ";
+  v2fPrint(movement);
+  std::cout << "\n";
 
   //add to repulsive Forces
   v2fAdd(movement, repelForce, movement);

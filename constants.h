@@ -35,6 +35,7 @@ void v2fSub( v2f v1, v2f v2, v2f res );
 void v2fAdd( v2f v1, v2f v2, v2f res );
 
 void v2fPrint( v2f p);
+void v2fPrint( const char * label, v2f p);
 void v2fMult( v2f v, float f, v2f res );
 
 void v2fFromJson( Json::Value v, v2f res);

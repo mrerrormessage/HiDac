@@ -38,13 +38,15 @@ void CrowdObject::getNorm( v2f ret ){
 }
 
 
-float CrowdObject::getDistance( v2f pos ){
-  return 0.0;
+float CrowdObject::getDistance( v2f otherPos ){
+  v2f v;
+  getDirection( otherPos, v);
+  return v2fLen( v );
 }
 
 
-void CrowdObject::getDirection( v2f pos, v2f res ){
-  v2fMult(pos, 0.0, res);
+void CrowdObject::getDirection( v2f otherPos, v2f res ){
+  v2fSub(pos, otherPos, res);
   return;
 }
 

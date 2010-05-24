@@ -1,5 +1,6 @@
 { 
-  
+  "steps" : 10, 
+  "timeslice" : 0.5,   
   "agents" : [
   {"attractor" : {
   	       	 "type" : "attractor", 

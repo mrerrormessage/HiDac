@@ -36,12 +36,19 @@ Json::Value readJsonFromFile(const char * file){
 }
 int main( int argc, char ** argv){
   Json::Value data = readJsonFromFile( "data/test.json" );
-  
+
+  int steps = data["steps"].asInt();
+  float deltat = data["timeslice"].asDouble();
   Agent::Agent * a = new Agent;
   *a = Agent(data["agents"][0u]);
   
   a->print();
-
+  
+  for( int i = 0 ; i < steps ; i++){
+  a->calculateForces();
+  a->applyForces( deltat );
+  a->print();
+  }
   return 0;
 
 }

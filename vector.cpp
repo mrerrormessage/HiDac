@@ -20,6 +20,10 @@ float v2fLen( v2f v ) {
 
 void v2fNormalize( v2f v, v2f res ){
   float len = v2fLen( v );
+  if( len == 0.0){
+    v2fCopy(v, res); 
+    return;
+  }
   res[0] = v[0] / len;
   res[1] = v[1] / len;
   return; 
@@ -64,4 +68,8 @@ void v2fFromJson( Json::Value v, v2f res){
 void v2fPrint( v2f p ){
   std::cout << "<" << p[0] << "," << p[1] << ">";
   return;
+}
+
+void v2fPrint( const char * label, v2f p){
+  std::cout << label << "<" << p[0] << "," << p[1] << ">" << "\n";
 }
