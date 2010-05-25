@@ -1,5 +1,6 @@
 #include "Agent.h"
 #include "CrowdObject.h"
+#include "Wall.h"
 #include <stdlib.h>
 #include <fstream> 
 #include <istream>
@@ -41,12 +42,19 @@ int main( int argc, char ** argv){
   float deltat = data["timeslice"].asDouble();
   Agent::Agent * a = new Agent;
   *a = Agent(data["agents"][0u]);
+
+  CrowdObject::CrowdObject * cos;
+  cos = twoWalls(data["walls"][0u]);
   
   a->print();
   
   for( int i = 0 ; i < steps ; i++){
+
+
   a->calculateForces();
+
   a->applyForces( deltat );
+
   a->print();
   }
   return 0;

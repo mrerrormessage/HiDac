@@ -37,7 +37,8 @@ class Agent : public CrowdObject {
   float Beta;
 
   //position - will assume continuous for now
-  //pos included in CrowdObject.h
+  v2f pos;
+
   v2f vel;
 
   //norm and it's setter method are inherited from CrowdObject

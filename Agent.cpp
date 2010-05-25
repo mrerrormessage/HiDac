@@ -41,9 +41,7 @@ Agent::Agent( Json::Value a ){
 }
 
 void Agent::print(){
-  std::cout << "position: ";
-  v2fPrint( pos );
-  std::cout << "\n";
+  v2fPrint( "position: ", pos);
   return;
 
 }
@@ -141,12 +139,13 @@ void Agent::calculateForces (){
 
   //Force towards attractor
   v2f dtoattractor;
+  //a problem is that with just the attractor the agent will 'pace' back and forth over it
   attractor.getDirection( pos, dtoattractor );
-  v2fPrint( "dtoa: ", dtoattractor);
-  v2fNormalize( dtoattractor , dtoattractor );
 
   v2fMult(dtoattractor, attractorWeight, dtoattractor);
+
   v2fAdd( rt, dtoattractor, rt);
+
 
   //foreach object in visobjects
   std::vector<CrowdObject>::iterator it;
@@ -208,10 +207,9 @@ void Agent::calculateForces (){
   }
 
   v2fCopy(rt, force);
-  //maybe copy a normalized force into norm? 
-  v2fCopy(force, norm);
-  v2fNormalize(norm, norm);
 
+  //normalize force
+  v2fNormalize(force, force);
 
   //need to add repulsion forces as well. Will test shortly then add
   v2fMult( repelForce, 0.0, repelForce);
@@ -234,9 +232,9 @@ float Agent::computeAlpha( ){
 
 float Agent::computeVel( float deltaT ){
   if (v2fLen(vel) == maxVelocity)
-    return v2fLen(vel);
+    return getSpeed();
   else 
-    return v2fLen(vel) + acceleration*deltaT;
+    return getSpeed() + acceleration*deltaT;
 }
 
 void Agent::applyForces( float deltaT ){
@@ -247,20 +245,18 @@ void Agent::applyForces( float deltaT ){
   //compute normal movement forces
   v2f fallen;
   computeFallen(fallen);
-  v2f normalMove, movement;
- 
+  v2f normForce, normalMove, movement;
+
   float moveFactor = computeAlpha() * computeVel(deltaT) * deltaT;
-  v2fPrint( "force: ", force );
+
   v2fMult(force, (1.0 - Beta), normalMove);
 
-
-
   v2fMult(fallen, Beta, fallen);
+
   v2fAdd(fallen, normalMove, movement);
+
   v2fMult(movement, moveFactor, movement);
-  std::cout << "moving: ";
-  v2fPrint(movement);
-  std::cout << "\n";
+
 
   //add to repulsive Forces
   v2fAdd(movement, repelForce, movement);

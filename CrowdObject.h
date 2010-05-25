@@ -11,10 +11,13 @@ enum objtype {AGENT,
 	      ATTRACTOR};
 
 class CrowdObject { 
+ private: 
+  v2f pos;
+
  protected:
 
   v2f norm;
-  v2f pos;
+
   objtype myType;
 
  public: 

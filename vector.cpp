@@ -35,9 +35,10 @@ float v2fCross( v2f v1, v2f v2){
 
 }
 
+//gets the tangent vector in the 
 void v2fTangent( v2f v, v2f ret ){
-  ret[0] = -ret[1];
-  ret[1] = ret[0];
+  ret[0] = v[1];
+  ret[1] = -v[0];
 }
 
 void v2fNegate( v2f v){
