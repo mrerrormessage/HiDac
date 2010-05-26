@@ -21,7 +21,7 @@ Wall::Wall(v2f s, v2f e ){
 //two lines in start + direction format along with their lengths
 bool testLineIntersection( v2f p1, v2f d1, float l1, v2f p2, v2f d2, float l2){
 
-
+  return false;
 }
 
 //checking the intersection of a line and a rectangle
@@ -34,7 +34,7 @@ bool Wall::isVisible( v2f pos, v2f dir, float vislength, float viswidth){
   //otherwise, treat the rectangle as four lines. The wall is then visible if
   //its segment intersects any of the four lines
   
-
+  return true;
 }
 
 void Wall::getNorm( v2f ret){
@@ -61,7 +61,7 @@ void Wall::getDirection( v2f pos, v2f res ){
   v2fMult( dir, t, closept );
   v2fAdd( closept, start, closept);
 
-  v2fCopy( closept, ret);
+  v2fCopy( closept, res);
 }
 
 int Wall::getType(){

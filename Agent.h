@@ -28,6 +28,7 @@ class Agent : public CrowdObject {
 
   //states whether an agent is colliding with another
   bool isColliding;
+  std::vector<CrowdObject> collideObjects;
 
   //whether agent is stopping or waiting. Not used at present. 
   bool stopping; 
@@ -39,6 +40,7 @@ class Agent : public CrowdObject {
   //position - will assume continuous for now
   v2f pos;
 
+  //velocity
   v2f vel;
 
   //norm and it's setter method are inherited from CrowdObject
@@ -80,6 +82,7 @@ class Agent : public CrowdObject {
   //tells another agent whether it is visible
   //these are inherited from CrowdObject.h
   bool isVisible( v2f pos, v2f dir, float vislength, float viswidth);
+  
   float getDistance( v2f pos );
   void getDirection( v2f pos, v2f res);
 

@@ -92,8 +92,9 @@ bool Agent::isVisible( v2f objPos, v2f objDir, float vislength, float viswidth )
   
   //procedure: take the point at the center of the circle representing an agent, and check that the distance between it and the line is less than radius + viswidth
 
+  //the technical procedure is out of geometric tools for computer games
   v2f cpostolpos;
-  v2fSub( objPos, pos, cpostolpos);
+  v2fSub( objPos, pos, cpostolpos );
   
   v2f negDir;
   v2fCopy(objDir, negDir);
@@ -103,8 +104,9 @@ bool Agent::isVisible( v2f objPos, v2f objDir, float vislength, float viswidth )
   float er = radius + viswidth;
 
   float root = pow( v2fDot(objDir, cpostolpos) , 2) - 
-    ( pow(v2fLen(objDir) , 2) * 
-      (pow( v2fLen(cpostolpos ), 2) - pow( er, 2 )));
+    ( pow(v2fLen( objDir ) , 2 ) * 
+      ( pow(v2fLen( cpostolpos ), 2) - pow( er, 2 )) );
+
 
   return root >= ( 0.0 - EPSILON );
   

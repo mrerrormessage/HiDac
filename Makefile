@@ -6,7 +6,7 @@ LIBS= $(JSONLD)
 EXENAME=crowdsim
 
 
-all: Agent.o CrowdObject.o Vector.o Wall.o
+all: Agent.o CrowdObject.o Vector.o Wall.o CrowdWorld.o
 	$(CC) $(CFLAGS) main.cpp *.o $(LIBS) -o $(EXENAME)
 
 Agent.o: Agent.cpp
@@ -14,6 +14,9 @@ Agent.o: Agent.cpp
 
 CrowdObject.o: CrowdObject.cpp
 	$(CC) $(CFLAGS) -I. -c CrowdObject.cpp
+
+CrowdWorld.o : CrowdWorld.cpp
+	$(CC) $(CFLAGS) -I. -c CrowdWorld.cpp
 
 Vector.o : vector.cpp
 	$(CC) $(CFLAGS) -I. -c vector.cpp
