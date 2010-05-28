@@ -90,26 +90,17 @@ bool Agent::isVisible( v2f objPos, v2f objDir, float vislength, float viswidth )
   //procedure: given the circle that the agent has, find the point closest to the 
   //line described by origin: pos, direction: dir, length: vislength. 
   
-  //procedure: take the point at the center of the circle representing an agent, and check that the distance between it and the line is less than radius + viswidth
+  //procedure: take the point at the center of the circle representing an agent
+  // check that the distance between it and the line is less than radius + viswidth
 
   //the technical procedure is out of geometric tools for computer games
-  v2f cpostolpos;
-  v2fSub( objPos, pos, cpostolpos );
-  
-  v2f negDir;
-  v2fCopy(objDir, negDir);
-  v2fNegate( negDir );
-  
-  //the effective radius
+  float d = ptToLineDist( pos, objPos, objDir, vislength);
+
   float er = radius + viswidth;
+  if( d <= er )
+    return true;
 
-  float root = pow( v2fDot(objDir, cpostolpos) , 2) - 
-    ( pow(v2fLen( objDir ) , 2 ) * 
-      ( pow(v2fLen( cpostolpos ), 2) - pow( er, 2 )) );
-
-
-  return root >= ( 0.0 - EPSILON );
-  
+  return false;
 
 }
 
@@ -149,7 +140,7 @@ void Agent::calculateForces (){
   v2fAdd( rt, dtoattractor, rt);
 
 
-  //foreach object in visobjects
+  //foreach object in visObjects
   std::vector<CrowdObject>::iterator it;
   v2f tempForce;
   
@@ -157,8 +148,8 @@ void Agent::calculateForces (){
   float distweight;
   float dcrossv;
   v2f otherVel;
-  for( it = visobjects.begin() ; 
-       it != visobjects.end();
+  for( it = visObjects.begin() ; 
+       it != visObjects.end();
        it++ ){
     v2fMult( tempForce, 0.0, tempForce);
     switch( it->getType() ){
@@ -187,7 +178,8 @@ void Agent::calculateForces (){
       dcrossv = v2fCross( tempForce, vel );
       v2fMult(tempForce, dcrossv , tempForce);
       v2fNormalize(tempForce, tempForce);
- 
+
+      std::cout << "calculating wall force\n";
       break; 
     }
     case OBSTACLE : {
@@ -269,4 +261,28 @@ void Agent::applyForces( float deltaT ){
   v2fSub( pos, oldPos, vel );
 
 
+}
+
+//functions to update visibility and collision vectors
+void Agent::checkCollide( CrowdObject::CrowdObject * c ){
+  if(c->getDistance( pos ) < radius ){
+    collideObjects.push_back( *c );
+    isColliding = true;
+  }
+}
+
+void Agent::checkVisible( CrowdObject::CrowdObject * c ){
+  v2f d; 
+  getDirection( d );
+  if( c->isVisible(pos, d, vislong, viswide) ){
+    visObjects.push_back( *c );
+  } 
+
+}
+
+//function to 'reset' at the end of a simulation step 
+void Agent::reset(){
+  isColliding = false;
+  visObjects.clear();
+  collideObjects.clear();
 }

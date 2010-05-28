@@ -30,6 +30,9 @@ class Agent : public CrowdObject {
   bool isColliding;
   std::vector<CrowdObject> collideObjects;
 
+  //lists of visible objects
+  std::vector<CrowdObject> visObjects;
+
   //whether agent is stopping or waiting. Not used at present. 
   bool stopping; 
   bool waiting; 
@@ -55,8 +58,6 @@ class Agent : public CrowdObject {
   float vislong;
   float viswide;
 
-  //lists of visible objects
-  std::vector<CrowdObject> visobjects;
 
   //Attractor
   CrowdObject attractor;
@@ -91,6 +92,12 @@ class Agent : public CrowdObject {
 
   void applyForces( float deltaT );
 
+  //functions to update visibility and collision vectors
+  void checkCollide( CrowdObject::CrowdObject * c );
+  void checkVisible( CrowdObject::CrowdObject * c );
+
+  //function to 'reset' at the end of a simulation step 
+  void reset();
 };
 
 #endif

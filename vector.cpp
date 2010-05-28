@@ -56,6 +56,12 @@ void v2fAdd( v2f v1, v2f v2, v2f res ){
   res[1] = v1[1] + v2[1]; 
 }
 
+void v2fAdd( v2f v1, v2f v2, float t, v2f res){
+  res[0] = v1[0] + (v2[0] * t);
+  res[1] = v1[1] + (v2[1] * t);
+
+}
+
 void v2fMult( v2f v, float f, v2f res ){
   res[0] = f * v[0];
   res[1] = f * v[1];
@@ -73,4 +79,29 @@ void v2fPrint( v2f p ){
 
 void v2fPrint( const char * label, v2f p){
   std::cout << label << "<" << p[0] << "," << p[1] << ">" << "\n";
+}
+
+/*procedure taken from geometric tools for computer graphics*/
+float ptToLineDist( v2f pos, v2f start, v2f dir, float len ){
+  
+  v2fNormalize(dir, dir);
+  v2f diff, end;
+  v2fSub( pos, start, diff );
+  float t = v2fDot(dir, diff);
+  if (t >= len ){
+
+    v2fAdd( start, dir, len, end );
+    v2fSub( pos, end, diff );
+    return v2fLen( diff);
+  }
+  if (t <= 0.0 ){
+    v2fSub( pos, start, diff);
+    return v2fLen( diff);
+  }
+
+
+  v2fAdd( start, dir, t, end );
+  v2fSub( pos, end, diff );
+  return v2fLen( diff);
+    
 }

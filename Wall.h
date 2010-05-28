@@ -1,8 +1,10 @@
+
 #include "CrowdObject.h"
 #include "constants.h"
 #include <jsoncpp/value.h>
 
-
+#ifndef _WALL_H_
+#define _WALL_H_
 
 
 class Wall : public CrowdObject {
@@ -42,3 +44,5 @@ class Wall : public CrowdObject {
 };
 
 Wall::Wall * twoWalls( Json::Value w);
+
+#endif

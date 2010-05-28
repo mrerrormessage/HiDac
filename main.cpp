@@ -1,6 +1,7 @@
 #include "Agent.h"
 #include "CrowdObject.h"
 #include "Wall.h"
+#include "CrowdWorld.h"
 #include <stdlib.h>
 #include <fstream> 
 #include <istream>
@@ -45,18 +46,15 @@ int main( int argc, char ** argv){
 
   CrowdObject::CrowdObject * cos;
   cos = twoWalls(data["walls"][0u]);
-  
-  a->print();
-  
+  CrowdWorld::CrowdWorld c(data);
+
   for( int i = 0 ; i < steps ; i++){
-
-
-  a->calculateForces();
-
-  a->applyForces( deltat );
-
-  a->print();
+    c.updateAgents();
+    c.calcForces();
+    c.stepWorld(deltat);
+    c.print();
   }
+
   return 0;
 
 }

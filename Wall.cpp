@@ -18,8 +18,28 @@ Wall::Wall(v2f s, v2f e ){
 
 }
 
+
 //two lines in start + direction format along with their lengths
 bool testLineIntersection( v2f p1, v2f d1, float l1, v2f p2, v2f d2, float l2){
+
+  v2fNormalize( d1, d1);
+  v2fNormalize( d2, d2);
+
+  v2f delta;
+  v2fSub( p2, p1, delta);
+  float s, t;
+
+  //parallel case
+  if( v2fCross( d1, d2) == 0 ){
+    return false;
+  }
+
+  s = v2fCross(delta, d2)/ v2fCross(d1, d2);
+  t = v2fCross(delta, d1) / v2fCross(d1, d2);
+  
+  if(s <= l1 && s >= 0.0 && t <=l2 && t >= 0.0){
+    return true;
+  }
 
   return false;
 }
@@ -27,14 +47,26 @@ bool testLineIntersection( v2f p1, v2f d1, float l1, v2f p2, v2f d2, float l2){
 //checking the intersection of a line and a rectangle
 bool Wall::isVisible( v2f pos, v2f dir, float vislength, float viswidth){
   
-  //quick heuristic - not technically correct
-  if( getDistance(pos) > vislength )
-    return false;
+  //check to see if either the start or end lies within viswidth of the line
+  //this test is repeated in Agent.cpp
+  if( ptToLineDist( start, pos, dir, vislength ) <= viswidth ){
+    return true;
+  }
   
-  //otherwise, treat the rectangle as four lines. The wall is then visible if
-  //its segment intersects any of the four lines
-  
-  return true;
+  //otherwise, treat the rectangle as two lines. The wall is then visible if
+  //its segment intersects any of those lines
+  v2f walldir;
+  v2fSub( end, start, walldir );
+  float walllen = v2fLen( walldir );
+  v2f tan;
+  v2fTangent( dir, tan );
+  v2f start1, start2;
+  v2fAdd(pos, tan , viswidth , start1);
+  v2fAdd(pos, tan, -1*viswidth, start2);
+  return 
+    testLineIntersection( pos , dir , vislength , start , walldir , walllen ) 
+    || 
+    testLineIntersection( pos , dir , vislength , start , walldir , walllen);
 }
 
 void Wall::getNorm( v2f ret){

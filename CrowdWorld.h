@@ -2,20 +2,20 @@
 #include "Agent.h"
 #include "Wall.h"
 #include <vector>
+#include <jsoncpp/value.h>
 
 class CrowdWorld {
  private:
-  std::vector<Agent> agentList;
-  std::vector<CrowdObject> objectList;
+  std::vector<Agent * > agentList;
+  std::vector<CrowdObject * > objectList;
   
-  //singleton
-  CrowdWorld();
-  ~CrowdWorld();
-  CrowdWorld * instance;
-
+  void createNewObject(Json::Value v);
+  
  public:
-  CrowdWorld* getInstance();
-  CrowdWorld* destroyInstance();
+  //build from JSON value
+  CrowdWorld();
+  CrowdWorld( Json::Value w );
+  ~CrowdWorld();
   
   //updates each agent with visibility and collision information
   void updateAgents();
@@ -25,4 +25,7 @@ class CrowdWorld {
   
   //applies forces for each agent
   void stepWorld(float deltaT);
+
+  void print();
+
 };
