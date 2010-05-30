@@ -7,8 +7,9 @@
 #include <vector>
 #include <jsoncpp/value.h>
 #include <iostream>
+#include <cstdlib>
 #include "constants.h"
-
+#include "Wall.h"
 
 class Agent : public CrowdObject { 
  private:
@@ -20,6 +21,8 @@ class Agent : public CrowdObject {
 
   float fallenWeight;
 
+  float personalSpace;
+
   float acceleration;
   float maxVelocity;
 
@@ -28,14 +31,19 @@ class Agent : public CrowdObject {
 
   //states whether an agent is colliding with another
   bool isColliding;
-  std::vector<CrowdObject> collideObjects;
+  std::vector<CrowdObject *> collideObjects;
 
   //lists of visible objects
-  std::vector<CrowdObject> visObjects;
+  //should probably be pointers, will change when needed 
+  std::vector<CrowdObject *> visObjects;
 
-  //whether agent is stopping or waiting. Not used at present. 
+  //whether agent is stopping or waiting. 
   bool stopping; 
+  int stoptime;
   bool waiting; 
+
+  //whether agent is panicked - idea: make quantitative
+  bool panic;
 
   //fallen-agent-avoidance parameter
   float Beta;
@@ -53,6 +61,7 @@ class Agent : public CrowdObject {
   
   //this is needed for repulsion forces. Until those are implemented it will be set to <0.0, 0.0> in calculateForces
   v2f repelForce;
+  void calculateRepelForce();
 
   //vision range - to calculate a vision rectangle, look out vislong units along velocity vector, then look by viswide / 2 units. 
   float vislong;
@@ -69,6 +78,7 @@ class Agent : public CrowdObject {
  public: 
   Agent();
   Agent(Json::Value a);
+  ~Agent();
   Json::Value getJson();
   void print();
   objtype getType();
@@ -76,6 +86,9 @@ class Agent : public CrowdObject {
   void setVelocity( v2f set );
   float getSpeed( );
   void getDirection( v2f get); //should return a normalized velocity vector
+
+  float getPersonalSpace();
+  float getRadius();
 
   void getPos( v2f ret );
   void setPos( v2f set );

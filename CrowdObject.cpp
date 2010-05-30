@@ -28,6 +28,7 @@ CrowdObject::CrowdObject( Json::Value c){
 
 //all methods of CrowdObject will be overridden. 
 bool CrowdObject::isVisible( v2f pos, v2f dir, float vislength, float viswidth){
+  std::cout << "crap!\n";
   return false; 
 }
 
@@ -41,6 +42,7 @@ void CrowdObject::getNorm( v2f ret ){
 float CrowdObject::getDistance( v2f otherPos ){
   v2f v;
   getDirection( otherPos, v);
+  std::cout << "BAD THINGS!\n";
   return v2fLen( v );
 }
 

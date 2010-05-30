@@ -1,13 +1,15 @@
 CC=g++
-CFLAGS=-Wall
+PKLIBS=OGRE OIS
+OGINCL= $(shell pkg-config --cflags $(PKLIBS))
+CFLAGS=-Wall $(OGINCL)
 JSONLD=-ljson -lstdc++
 JSONHD=-I /usr/local/include
-LIBS= $(JSONLD)
+LIBS= $(shell pkg-config --libs $(PKLIBS)) $(JSONLD)
 EXENAME=crowdsim
 
 
-all: Agent.o CrowdObject.o Vector.o Wall.o CrowdWorld.o
-	$(CC) $(CFLAGS) main.cpp *.o $(LIBS) -o $(EXENAME)
+all: Agent.o CrowdObject.o Vector.o Wall.o CrowdWorld.o Render.o
+	$(CC) $(CFLAGS) $(OGINCL) main.cpp *.o $(LIBS) -o $(EXENAME)
 
 Agent.o: Agent.cpp
 	$(CC) $(CFLAGS) -I. -c Agent.cpp
@@ -20,6 +22,9 @@ CrowdWorld.o : CrowdWorld.cpp
 
 Vector.o : vector.cpp
 	$(CC) $(CFLAGS) -I. -c vector.cpp
+
+Render.o : Render.cpp
+	$(CC) $(CFLAGS) $(OGINCL) -I. -c Render.cpp
 
 Wall.o : Wall.cpp
 	$(CC) $(CFLAGS) -I. -c Wall.cpp

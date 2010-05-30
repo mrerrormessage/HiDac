@@ -7,16 +7,18 @@
 		 "norm" : [0.0, 0.0],
 		 "pos" :  [5.0, 5.0]
 		 },
-   "atWeight" : 1.0,
-   "waWeight" : 0.25,
+   "atWeight" : 0.5,
+   "waWeight" : 0.6,
    "obWeight" : 0.5, 
    "faWieght" : 0.0, 
    "accel"    : 0.2,
-   "maxVel"   : 1.0,
+   "maxVel"   : 0.5,
    "visDist"  : 3.0, 
    "visWid"   : 2.0, 
    "pos"      : [-20.0, -20.0],
-   "vel"      : [1.0, 0.0]
+   "vel"      : [0.0, 0.0],
+   "pspace"   : 0.1, 
+   "radius"   : 0.5
    }
    ], 
    "objects" : [

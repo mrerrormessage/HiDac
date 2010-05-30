@@ -52,7 +52,8 @@ bool Wall::isVisible( v2f pos, v2f dir, float vislength, float viswidth){
   if( ptToLineDist( start, pos, dir, vislength ) <= viswidth ){
     return true;
   }
-  
+
+
   //otherwise, treat the rectangle as two lines. The wall is then visible if
   //its segment intersects any of those lines
   v2f walldir;
@@ -85,15 +86,35 @@ float Wall::getDistance( v2f pos ){
 //similar, but in vector form
 void Wall::getDirection( v2f pos, v2f res ){
   v2f dir, pmins;
+  v2f closept;
+  v2fMult( dir, 0.0, dir );
+  v2fMult( pmins, 0.0, pmins);
+  v2fMult( closept, 0.0, closept);
+  //get wall direction
   v2fSub( end, start, dir);
+  float len = v2fLen(dir);
   v2fNormalize( dir, dir );
+
+  //find the point along the line closest
   v2fSub( pos, start, pmins);
   float t = v2fDot( dir, pmins );
-  v2f closept;
-  v2fMult( dir, t, closept );
-  v2fAdd( closept, start, closept);
 
-  v2fCopy( closept, res);
+  //if not part of the line segment, the start or the end is closest
+  if(t <= 0){
+    v2fSub( pos, start, res);
+    return;
+  }
+  if(t > len){
+    v2fSub( pos, end, res);
+    return;
+  }
+
+  //otherwise, use t
+  v2fAdd( start, dir, t, closept);
+
+  v2fSub( pos, closept, res );
+  v2fEpsilon(res);
+  return;
 }
 
 int Wall::getType(){

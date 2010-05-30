@@ -5,7 +5,7 @@
 #include <jsoncpp/value.h>
 #include <iostream>
 
-#define EPSILON 0.005
+#define MY_EPSILON 0.0005
 
 typedef float v2f[2];
 
@@ -42,6 +42,8 @@ void v2fMult( v2f v, float f, v2f res );
 void v2fFromJson( Json::Value v, v2f res);
 
 float ptToLineDist( v2f pos, v2f start, v2f dir, float len );
+
+void v2fEpsilon( v2f v );
 
 #endif
 

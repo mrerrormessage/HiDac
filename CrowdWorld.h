@@ -1,6 +1,7 @@
 #include "CrowdObject.h"
 #include "Agent.h"
 #include "Wall.h"
+#include "Render.h"
 #include <vector>
 #include <jsoncpp/value.h>
 
@@ -26,6 +27,7 @@ class CrowdWorld {
   //applies forces for each agent
   void stepWorld(float deltaT);
 
+  //output functions
   void print();
-
+  void render();
 };

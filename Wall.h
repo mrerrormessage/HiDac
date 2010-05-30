@@ -40,7 +40,9 @@ class Wall : public CrowdObject {
   //returns a zero-vector for all non-agent CrowdObjects
   void getVelocity( v2f ret );
 
-
+  //leaky abstractions
+  void getPos( v2f ret) { v2fCopy(start, ret); return; }
+  float getRadiu() {return 0.0;}
 };
 
 Wall::Wall * twoWalls( Json::Value w);

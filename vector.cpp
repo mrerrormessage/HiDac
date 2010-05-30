@@ -12,11 +12,18 @@ float v2fDot( v2f v1, v2f v2){
 }
 
 float v2fLen( v2f v ) {
+  
   float aSquared = pow( v[0], 2);
   float bSquared = pow( v[1], 2);
-  
+
+  if( aSquared + bSquared <= 0.0){
+    return 0.0;
+  }
+ 
   return sqrt(aSquared + bSquared);
+
 }
+
 
 void v2fNormalize( v2f v, v2f res ){
   float len = v2fLen( v );
@@ -65,6 +72,10 @@ void v2fAdd( v2f v1, v2f v2, float t, v2f res){
 void v2fMult( v2f v, float f, v2f res ){
   res[0] = f * v[0];
   res[1] = f * v[1];
+  if( f == 0.0 ){
+    res[0] = 0.0;
+    res[1] = 0.0;
+  }
 }
 
 void v2fFromJson( Json::Value v, v2f res){
@@ -104,4 +115,12 @@ float ptToLineDist( v2f pos, v2f start, v2f dir, float len ){
   v2fSub( pos, end, diff );
   return v2fLen( diff);
     
+}
+
+void v2fEpsilon( v2f v){
+  if( v[0] <= MY_EPSILON && v[0] >= -MY_EPSILON )
+    v[0] = 0.0;
+  if( v[1] <= MY_EPSILON && v[1] >= -MY_EPSILON )
+    v[1] = 0.0;
+  return;
 }

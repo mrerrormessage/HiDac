@@ -1,7 +1,7 @@
 #include "CrowdWorld.h"
 
 CrowdWorld::CrowdWorld(){
-
+  Render::Render * r = Render::getInstance();
 }
 
 //adds the new CrowdObject(s) to the end of the vector
@@ -14,12 +14,13 @@ void CrowdWorld::createNewObject(Json::Value v){
   std::string ob = "obstacle";
   if (s.compare(w) == 0){
     Wall::Wall* ws = twoWalls(v);
-    std::cout << "HERE I AM";
+
     objectList.push_back( ws );
     objectList.push_back( &(ws[1]) );
+    return;
   }
   if (s.compare(ag) == 0){
-    std::cout << "bad object!";
+
     objectList.push_back( new Agent(v) );
   }
   else 
@@ -39,7 +40,7 @@ CrowdWorld::CrowdWorld( Json::Value w ){
 
   int numObjects = w["objects"].size();
   for(int i = 0; i < numObjects ; i++){
-    std::cout << "adding";
+
     createNewObject( w["objects"][i] );
   }
 
@@ -49,7 +50,8 @@ CrowdWorld::CrowdWorld( Json::Value w ){
 }
 
 CrowdWorld::~CrowdWorld(){
-
+  Render::Render * r = Render::getInstance();
+  r->destroyInstance();
 }
 
 
@@ -71,10 +73,10 @@ void CrowdWorld::updateAgents(){
     for( std::vector<CrowdObject *>::iterator c = objectList.begin(); 
 	 c != objectList.end();
 	 c++ ){
+      
+      (* a)->checkVisible(* c);
+      (* a)->checkCollide(* c);
 
-      (* a)->checkVisible(*c);
-      (* a)->checkCollide(*c);
-      //      std::cout << "checking\n";
     }
 
   }
@@ -106,4 +108,11 @@ void CrowdWorld::print(){
 
     (* it)->print();
   }
+}
+
+void CrowdWorld::render(){
+  Render::Render * r = Render::getInstance();
+  //requires a float, but that shouldn't affect anything
+  r->update(0.1);
+
 }
