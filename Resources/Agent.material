@@ -1,0 +1,12 @@
+material Material/SOLID
+{
+	technique
+	{
+		pass
+		{
+			ambient 0.100000 0.100000 0.950000
+			diffuse 0.302592 0.353024 0.800000
+			specular 0.500000 0.500000 0.500000 12.500000
+		}
+	}
+}
