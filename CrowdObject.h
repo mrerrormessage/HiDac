@@ -39,7 +39,7 @@ class CrowdObject {
   int getType();
 
   //returns a zero-vector for all non-agent CrowdObjects
-  void getVelocity( v2f ret );
+  virtual void getVelocity( v2f ret );
 
   //functions needed by Agent - leaky abstractions
   virtual void getPos( v2f ret) {v2fMult( ret, 0.0, ret ); return;}

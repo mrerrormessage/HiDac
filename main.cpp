@@ -55,6 +55,7 @@ int main( int argc, char ** argv){
   }else {
     data = readJsonFromFile( "data/test.json" );
   }
+  std::srand(0);
   int steps = data["steps"].asInt();
   float deltat = data["timeslice"].asDouble();
   Agent::Agent * a = new Agent;
@@ -72,7 +73,7 @@ int main( int argc, char ** argv){
     c.stepWorld(deltat);
     c.print();
     r->update(deltat);
-    mysleep( 200 );
+    mysleep( 10 );
   }
 
   return 0;

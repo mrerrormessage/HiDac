@@ -47,7 +47,7 @@ DrawWall::DrawWall( Wall::Wall * wall, string meshname) : DrawObject( meshname )
   //translation
   v2fAdd( s, e, center);
   v2fMult(center, 0.5, center);
-  node->setPosition( center[0] + 0.5, 0.0, -center[1]);
+  node->setPosition( center[0], 0.0, -center[1]);
 
   //rotation:
   float theta = std::atan2( -n[1], -n[0] ) - std::atan2( 1.0, 0.0 );
@@ -96,7 +96,7 @@ Render::Render(){
   namenum = 0;
   root = new Ogre::Root( "config/plugins.cfg" , "config/ogre.cfg", "Ogre.log");
 
-  //  if( !root->restoreConfig() )
+  if( !root->restoreConfig() )
     root->showConfigDialog();
   Ogre::RenderWindow * w = root->initialise( true, "Rendering!");
   w->setVisible( true );

@@ -83,7 +83,7 @@ class Agent : public CrowdObject {
   ~Agent();
   Json::Value getJson();
   void print();
-  objtype getType();
+  int getType();
   void getVelocity( v2f ret );
   void setVelocity( v2f set );
   float getSpeed( );
@@ -104,8 +104,8 @@ class Agent : public CrowdObject {
   
   float getDistance( v2f pos );
   void getDirection( v2f pos, v2f res);
-
-
+ 
+  void calcAgentForce( CrowdObject::CrowdObject * a , v2f ret);
   void calculateForces( );
 
   void applyForces( float deltaT );

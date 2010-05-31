@@ -59,5 +59,6 @@ int CrowdObject::getType(){
 
 
 void CrowdObject::getVelocity(v2f ret){
+  std::cout << "Crap!\n";
   v2fMult( ret, 0.0, ret );
 }

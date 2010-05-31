@@ -1,0 +1,51 @@
+{ 
+  "steps" : 10000,
+  "timeslice" : 0.2,   
+  "agents" : [
+  {"attractor" : {
+  	       	 "type" : "attractor", 
+		 "norm" : [0.0, 0.0],
+		 "pos" :  [10.0, 0.0]
+		 },
+   "agWeight" : 0.75,
+   "atWeight" : 0.5,
+   "waWeight" : 0.8,
+   "obWeight" : 0.5, 
+   "faWieght" : 0.0, 
+   "accel"    : 0.05,
+   "maxVel"   : 0.2,
+   "visDist"  : 6.0, 
+   "visWid"   : 2.0, 
+   "pos"      : [-4.0, 0.0],
+   "vel"      : [0.0, 0.0],
+   "pspace"   : 0.1, 
+   "mesh"     : "blue.mesh",
+   "radius"   : 0.5,
+   "norm"     : [1.0, 0.0]
+   },
+  {"attractor" : {
+  	       	 "type" : "attractor", 
+		 "norm" : [0.0, 0.0],
+		 "pos" :  [12.0, 0.0]
+		 },
+   "agWeight" : 0.75,
+   "atWeight" : 0.8,
+   "waWeight" : 0.8,
+   "obWeight" : 0.5, 
+   "faWieght" : 0.0, 
+   "accel"    : 0.2,
+   "maxVel"   : 1.5,
+   "visDist"  : 6.0, 
+   "visWid"   : 2.0, 
+   "pos"      : [-10.0, 0.0],
+   "vel"      : [0.0, 0.0],
+   "pspace"   : 0.1, 
+   "mesh"     : "blue.mesh",
+   "radius"   : 0.5,
+   "norm"     : [1.0, 0.0]
+   }
+   ], 
+   "objects" : [
+   ]  
+
+}

@@ -24,6 +24,7 @@ Agent::Agent( Json::Value a ){
   wallWeight = a["waWeight"].asDouble();
   obstacleWeight = a["obWeight"].asDouble();
   fallenWeight = a["faWeight"].asDouble();
+  agentWeight = a["agWeight"].asDouble();
   acceleration = a["accel"].asDouble();
   maxVelocity = a["maxVel"].asDouble();
   vislong = a["visDist"].asDouble();
@@ -39,6 +40,9 @@ Agent::Agent( Json::Value a ){
   //for now we'll just have a CrowdObject contained in the agent
   attractor = CrowdObject( a["attractor"] );
   v2fFromJson( a["pos"], pos );
+  if(a.isMember("norm")){
+    v2fFromJson( a["norm"], norm);
+  }
   
   if(a.isMember( "liveValues" ) == true && a["liveValues"].asBool() == true){
     //all in-progress data will be reported to JSON object
@@ -62,7 +66,7 @@ Json::Value Agent::getJson(){
   return v;
 }
 
-objtype Agent::getType(){
+int Agent::getType(){
   return myType;
 }
 
@@ -82,6 +86,7 @@ void Agent::getNorm( v2f get ){
   v2f s;
   getDirection( s );
   v2fCopy(s, norm);
+  v2fNormalize(norm, norm);
   v2fCopy(norm, get);
 
 }
@@ -119,6 +124,7 @@ bool Agent::isVisible( v2f objPos, v2f objDir, float vislength, float viswidth )
   // check that the distance between it and the line is less than radius + viswidth
 
   //the technical procedure is out of geometric tools for computer games
+  //compute effective pos /radius/ along the normal line (to avoid looking behind oneself 
   float d = ptToLineDist( pos, objPos, objDir, vislength);
 
   float er = radius + viswidth;
@@ -207,8 +213,6 @@ void Agent::calculateRepelForce(){
 	//back-to-back sections
 	if( v2fDot( currentforce, vel ) <= 0.0 ){
 	  v2fAdd( forceFromWalls, currentforce, forceFromWalls);
-	  v2fPrint( "current force: ", currentforce);
-	  v2fPrint( "force from walls: ",  forceFromWalls);
 	}
      }
 	//in the paper's model, there are also obstacles. I have excluded those for now
@@ -220,17 +224,57 @@ void Agent::calculateRepelForce(){
   }
 
   /* carry out the overarching computation */
-  v2fPrint( "agent forces: ",  forceFromAgents);
-  v2fPrint( "force from walls: ",  forceFromWalls);
+  //  v2fPrint( "agent forces: ",  forceFromAgents);
+  //  v2fPrint( "force from walls: ",  forceFromWalls);
   if( v2fDot(vel, forceFromAgents) < 0 && !panic ){
     stopping = true;
     stoptime = std::rand() % 50;
+    v2fMult(vel, 0.0, vel);
   }
   v2fMult(forceFromAgents, lambda,forceFromAgents);
   v2fAdd(forceFromWalls, forceFromAgents, repelForce);
-  v2fPrint( "repulsion forces: ", repelForce);
+  //  v2fPrint( "repulsion forces: ", repelForce);
 }
 
+/* computes crosses for 2d vectors - returns (v1 x v2) x v1 */
+void crossAndRecross( v2f v1, v2f v2, v2f ret){
+  float firstcross = v2fCross(v1, v2);
+  v2fMult(ret, 0.0, ret);
+  ret[0] = -firstcross * v1[1];
+  ret[1] = firstcross * v1[0];
+
+}
+
+void Agent::calcAgentForce( CrowdObject::CrowdObject * a , v2f ret){
+  v2f meToYou;
+  v2f tforce;
+  v2f otherVel;
+  a->getDirection( pos, meToYou );
+  a->getVelocity(otherVel);
+
+  crossAndRecross( meToYou, vel, tforce);
+  v2fNormalize( tforce , tforce );
+
+  float distweight, dirweight;
+  distweight = pow( v2fLen(meToYou) - vislong, 2);
+
+  if( v2fDot( vel, otherVel ) > 0 ) {
+    dirweight = 1.2;
+  } else {
+    dirweight = 2.4;
+  }
+  //add in a slight right-bias if you are headed toward an agent with a direct oncoming or directly same-direction as you
+  std::cout << "ang: " << v2fDot( vel, otherVel );
+  if( v2fDot(vel, otherVel) <= MY_EPSILON && v2fDot(vel, otherVel) >= -MY_EPSILON){
+    v2f rforce;
+    v2fTangent( vel, rforce );
+    //tforce should be zero here
+    v2fAdd(tforce, rforce, 0.2, tforce);
+  }
+
+  v2fMult(tforce , distweight * dirweight, ret);
+  return;
+}
 
 //application of the HiDAC algorithm to an agent
 void Agent::calculateForces (){
@@ -241,8 +285,6 @@ void Agent::calculateForces (){
   v2f rt;
   v2fMult(rt, 0.0, rt);
   
-
-
   //copy the last force in (term 1 in equation)
   v2fCopy(force, rt);
 
@@ -250,9 +292,7 @@ void Agent::calculateForces (){
   v2f dtoattractor;
   //a problem is that with just the attractor the agent will 'pace' back and forth over it
   attractor.getDirection( pos, dtoattractor );
-
   v2fMult(dtoattractor, attractorWeight, dtoattractor);
-
   v2fAdd( rt, dtoattractor, rt);
 
 
@@ -264,46 +304,40 @@ void Agent::calculateForces (){
   float distweight;
   float dcrossv;
   v2f otherVel;
+  v2f n;
   for( it = visObjects.begin() ; 
        it != visObjects.end();
        it++ ){
     v2fMult( tempForce, 0.0, tempForce);
     switch( (*it)->getType() ){
     case AGENT : { 
-      //calculate tangential force
-      (*it)->getDirection(pos, tempForce);
-      dcrossv = v2fCross( tempForce, vel);
-      float dist = v2fLen( tempForce );
-      v2fMult(tempForce, dcrossv, tempForce);
-      v2fNormalize(tempForce, tempForce);
-      distweight = pow( dist -  perceivedDensity, 2);
-      //takes into account the difference in direction between the two agents
-      float dirweight;
-      (*it)->getVelocity(otherVel);
-      if( v2fDot( vel, otherVel ) > 0.0 + MY_EPSILON ){
-	dirweight = 1.2;
-      } else { 
-	dirweight = 2.4;
-      }
-      v2fMult( tempForce, dirweight * distweight, tempForce);
+      v2f dtoa;
+      //this is called for on page 102, but does not seem to be a part of the algorithm
+      /*      (*it)->getDirection( pos, dtoa );
+      (*it)->getVelocity( otherVel);
+      if( v2fLen(dtoa) < vislength - 1.5 && v2fDot(vel, otherVel) < 0.0){
+      } else{*/
+	calcAgentForce((*it), tempForce);
+	v2fMult( tempForce, agentWeight, tempForce);
+	//      }
       break;
     }
     case WALL : {
       //avoidance force for wall is wallnormal cross velocity cross wallnormal, normalized
-      (*it)->getNorm(tempForce);
-      dcrossv = v2fCross( tempForce, vel );
-      v2fMult(tempForce, dcrossv , tempForce);
+
+      (*it)->getNorm(n);
+      crossAndRecross(n, vel, tempForce); 
       v2fNormalize(tempForce, tempForce);
       v2fMult( tempForce, wallWeight, tempForce );
       break; 
     }
     case OBSTACLE : {
       //for now, obstacles work the same as walls, perhaps in the future that will change
-      (*it)->getNorm(tempForce);
-      dcrossv = v2fCross( tempForce, vel );
-      v2fMult(tempForce, dcrossv , tempForce);
+      (*it)->getDirection(pos, n);
+      crossAndRecross(n, vel, tempForce);
+      
       v2fNormalize(tempForce, tempForce);
- 
+      v2fMult(tempForce, obstacleWeight, tempForce);
       break;
     }
       //fallen_agent case not implemented
@@ -370,11 +404,13 @@ void Agent::applyForces( float deltaT ){
 
   //add to repulsive Forces
   v2fAdd(movement, repelForce, movement);
+  //this is the sum of forces for this move, store it in force for the computation on the next step
+  v2fCopy( movement, force );
   v2fAdd(movement, pos, pos);
 
   //update velocity value after updating position
   v2fSub( pos, oldPos, vel );
-
+  v2fNormalize( vel, norm);
 }
 
 //functions to update visibility and collision vectors
@@ -389,10 +425,12 @@ void Agent::checkCollide( CrowdObject::CrowdObject * c ){
 }
 
 void Agent::checkVisible( CrowdObject::CrowdObject * c ){
-  v2f d; 
-  getDirection( d );
-  
-  if( c->isVisible(pos, d, vislong, viswide) ){
+  v2f n; 
+  getNorm( n );
+  //don't want to look behind ourself, so we'll pass in our position moved forward by our radius
+  v2f ep;
+  v2fAdd( pos, n, radius, ep);
+  if( c->isVisible(ep, n, vislong - radius, viswide) ){
     visObjects.push_back( c );
   } 
 
