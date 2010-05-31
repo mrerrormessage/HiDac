@@ -1,7 +1,7 @@
 CC=g++
 PKLIBS=OGRE OIS
 OGINCL= $(shell pkg-config --cflags $(PKLIBS))
-CFLAGS=-Wall $(OGINCL)
+CFLAGS=-Wall -g $(OGINCL)
 JSONLD=-ljson -lstdc++
 JSONHD=-I /usr/local/include
 LIBS= $(shell pkg-config --libs $(PKLIBS)) $(JSONLD)

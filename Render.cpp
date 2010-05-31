@@ -3,16 +3,62 @@
 DrawObject::DrawObject(){
 }
 
-DrawObject::DrawObject( CrowdObject::CrowdObject * c, string mesh ){
+DrawObject::DrawObject ( string meshname){
+  createEntity( meshname);
+}
+
+void DrawObject::createEntity( string meshname ){
   Render::Render * r = Render::getInstance();
-  entity = r->newEntity( r->generateName(), mesh );
+  entity = r->newEntity( r->generateName(), meshname );
   node = r->attach( r->generateName(), entity);
+  return;
+}
+
+DrawAgent::DrawAgent( Agent::Agent * ag, string mesh ) : DrawObject(mesh){
+  a = ag;
+  float r = a->getRadius();
+  node->setScale( Ogre::Vector3( r / 2.0, 1.0, r / 2.0) ); 
+}
+
+
+void DrawAgent::update(){
+  v2f p, d, z;
+  v2fMult(z, 0.0, z);
+  a->getDirection(z, p);
+  node->setPosition(p[0], 0.0, -p[1]);
+  a->getNorm( d );
+  float theta = std::atan2( -d[1], -d[0] ) - std::atan2( 1.0, 0.0 );
+  node->setOrientation( Ogre::Quaternion( Ogre::Radian( theta ), Ogre::Vector3(0.0, 1.0, 0.0) ) );
 
 }
 
-void DrawObject::update(){
+
+
+DrawWall::DrawWall( Wall::Wall * wall, string meshname) : DrawObject( meshname ){
+  w = wall;
+  v2f wv, e, s, n, center;
+  w->getStart(s);
+  w->getEnd(e);
+  w->getNorm( n );
+  v2fSub(e, s, wv);
+  float len = v2fLen(wv);
+  node->setScale( len/ 2.0, 1.0, 1.0 );
+
+  //translation
+  v2fAdd( s, e, center);
+  v2fMult(center, 0.5, center);
+  node->setPosition( center[0] + 0.5, 0.0, -center[1]);
+
+  //rotation:
+  float theta = std::atan2( -n[1], -n[0] ) - std::atan2( 1.0, 0.0 );
+  node->setOrientation( Ogre::Quaternion( Ogre::Radian( theta ), Ogre::Vector3(0.0, 1.0, 0.0) ) ); 
 
 }
+
+void DrawWall::update(){
+
+}
+
 
 Render * Render::instance;
 
@@ -46,10 +92,12 @@ void setupResourceLocations()
 
 
 Render::Render(){
+  initialized =false;
   namenum = 0;
   root = new Ogre::Root( "config/plugins.cfg" , "config/ogre.cfg", "Ogre.log");
 
-  root->showConfigDialog();
+  //  if( !root->restoreConfig() )
+    root->showConfigDialog();
   Ogre::RenderWindow * w = root->initialise( true, "Rendering!");
   w->setVisible( true );
   setupResourceLocations();
@@ -61,6 +109,7 @@ Render::Render(){
 
   cam->setPosition( 0.0, 30.0, 0.5 );
   cam->lookAt( 0.0, 0.0, 0.0 );
+  cam->roll(Ogre::Radian( 3.14159 ) );
   cam->setNearClipDistance(4);
 
 
@@ -80,11 +129,7 @@ Render::Render(){
   l->setDiffuseColour( 0.5, 0.5, 0.5 );
   l->setSpecularColour( .75, .75, .75);
 
-
-
-
-  Ogre::Entity * e = newEntity(" hello!" , "Agent.mesh");
-  Ogre::SceneNode * n = attach( "hnode", e);
+  initialized = true;
 }
 
 Render::~Render(){
@@ -131,11 +176,29 @@ void Render::update( float f) {
        a++){
   (*a)->update();
   }
+  
   root->renderOneFrame();
   return;
 }
 
-void Render::drawThis( CrowdObject::CrowdObject * ob, string meshname ){
+
+
+/*void Render::drawThis( CrowdObject::CrowdObject * ob, string meshname ){
   DrawObject::DrawObject * d = new DrawObject( ob, meshname );
   drawObjects.push_back( d );
+}
+*/
+
+void Render::drawThis( Agent::Agent * a, string m ){
+  DrawAgent::DrawAgent * da = new DrawAgent( a, m);
+  drawObjects.push_back( da );
+}
+
+void Render::drawThis( Wall::Wall * w, string meshname){
+  DrawWall::DrawWall * dw = new DrawWall( w, meshname);
+  drawObjects.push_back( dw );
+}
+
+bool Render::isInitialized(){
+  return initialized;
 }

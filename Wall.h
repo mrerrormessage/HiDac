@@ -20,6 +20,10 @@ class Wall : public CrowdObject {
   //Wall constructor taking the start and end vectors
   Wall( v2f s, v2f e );
 
+  void getStart( v2f r) {v2fCopy(start, r);}
+  void getEnd( v2f r) {v2fCopy(end, r);}
+
+
   //each wall will be represented as two back-to-back walls. 
 
   //returns whether the object is visible within the vision rectangle presented
@@ -33,6 +37,7 @@ class Wall : public CrowdObject {
 
   //gets the direction vector from the calling position to the object
   void getDirection( v2f pos, v2f res);
+
 
   //gets the type of object
   int getType();

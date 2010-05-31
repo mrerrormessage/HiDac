@@ -4,6 +4,7 @@
 
 #include "CrowdObject.h"
 #include <math.h>
+#include <cmath>
 #include <vector>
 #include <jsoncpp/value.h>
 #include <iostream>
@@ -67,6 +68,7 @@ class Agent : public CrowdObject {
   float vislong;
   float viswide;
 
+  std::string mesh;
 
   //Attractor
   CrowdObject attractor;
@@ -92,7 +94,10 @@ class Agent : public CrowdObject {
 
   void getPos( v2f ret );
   void setPos( v2f set );
-  
+
+  std::string getMesh(){ return mesh; }
+
+  void getNorm( v2f get );
   //tells another agent whether it is visible
   //these are inherited from CrowdObject.h
   bool isVisible( v2f pos, v2f dir, float vislength, float viswidth);

@@ -17,10 +17,12 @@ void CrowdWorld::createNewObject(Json::Value v){
 
     objectList.push_back( ws );
     objectList.push_back( &(ws[1]) );
+    Render::Render * r = Render::getInstance();
+    r->drawThis(ws, "wall.mesh");
     return;
   }
   if (s.compare(ag) == 0){
-
+    
     objectList.push_back( new Agent(v) );
   }
   else 
@@ -30,12 +32,13 @@ void CrowdWorld::createNewObject(Json::Value v){
 
 CrowdWorld::CrowdWorld( Json::Value w ){
 
+  Render::Render * r = Render::getInstance();
   //loading from file
   int numAgents = w["agents"].size();
   for(int i = 0; i < numAgents ; i++ ){
     Agent::Agent * a = new Agent(w["agents"][i]);
     agentList.push_back( a );
-   
+    r->drawThis(a, a->getMesh());
   }
 
   int numObjects = w["objects"].size();

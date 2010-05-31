@@ -9,6 +9,8 @@
 #include "Ogre.h"
 #include "OgreConfigFile.h"
 #include "CrowdObject.h"
+#include "constants.h"
+#include "Agent.h"
 
 // Static plugins declaration section
 // Note that every entry in here adds an extra header / library dependency
@@ -52,18 +54,42 @@
 
 using namespace std;
 class DrawObject {
- private: 
+ protected: 
   //pointer to object to be rendered
-  //should NOT be void * in actual use
-  CrowdObject::CrowdObject * co;
 
   Ogre::SceneNode * node;
   Ogre::Entity * entity;
- public: 
-  DrawObject();
-  DrawObject(CrowdObject::CrowdObject * c, string mesh );
 
-  //update should provide a method to map from changed data in object to changing node position and orientation  
+ public:
+  DrawObject();
+  DrawObject( string m );
+
+  void createEntity(string meshname);
+
+  //possibly needs to be pure-virtual
+  virtual void update() = 0;
+
+};
+
+class DrawAgent : public DrawObject {
+ private: 
+  Agent::Agent * a;
+
+ public: 
+  DrawAgent();
+  DrawAgent(Agent::Agent * a, string meshname);
+
+  void update();
+};
+
+class DrawWall : public DrawObject {
+ private: 
+  Wall::Wall * w;
+  
+ public: 
+  DrawWall();
+  DrawWall( Wall::Wall * wall, string meshname);
+
   void update();
 
 };
@@ -87,6 +113,8 @@ class Render {
   ~Render();
 
   std::vector<DrawObject *> drawObjects;
+
+  bool initialized;
  public:
   //singleton maintenance
   static Render * getInstance();
@@ -101,10 +129,12 @@ class Render {
   //generates a unique name from the current render context
   string generateName();
 
-  void drawThis( CrowdObject::CrowdObject * ob, string meshname );
+  void drawThis( Agent::Agent * a, string meshname);
+  void drawThis( Wall::Wall * w, string meshname);
 
   //updates i.e. renders to the screen
   void update(float deltaTime);
+  bool isInitialized();
 };
 
 #endif

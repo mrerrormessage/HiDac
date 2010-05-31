@@ -33,6 +33,8 @@ Agent::Agent( Json::Value a ){
   
   personalSpace = a["pspace"].asDouble();
 
+  mesh = a["mesh"].asString();
+
   //not quite sure how to specify attractor
   //for now we'll just have a CrowdObject contained in the agent
   attractor = CrowdObject( a["attractor"] );
@@ -76,6 +78,13 @@ float Agent::getSpeed( ){
   return v2fLen( vel );
 }
 
+void Agent::getNorm( v2f get ){
+  v2f s;
+  getDirection( s );
+  v2fCopy(s, norm);
+  v2fCopy(norm, get);
+
+}
 void Agent::getDirection( v2f get ){
   if( this->getSpeed() >= 0.0 + MY_EPSILON ){
     v2fNormalize( vel, norm );

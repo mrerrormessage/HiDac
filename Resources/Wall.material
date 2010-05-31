@@ -1,0 +1,12 @@
+material WallMat
+{
+	technique
+	{
+		pass
+		{
+			ambient 0.106561 0.119169 0.093953
+			diffuse 0.106561 0.119169 0.093953
+			specular 0.500000 0.500000 0.500000 12.500000
+		}
+	}
+}
