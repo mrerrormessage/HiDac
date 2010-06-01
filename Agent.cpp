@@ -43,7 +43,9 @@ Agent::Agent( Json::Value a ){
   if(a.isMember("norm")){
     v2fFromJson( a["norm"], norm);
   }
-  
+
+  panic = false;
+
   if(a.isMember( "liveValues" ) == true && a["liveValues"].asBool() == true){
     //all in-progress data will be reported to JSON object
 
@@ -226,7 +228,7 @@ void Agent::calculateRepelForce(){
   /* carry out the overarching computation */
   //  v2fPrint( "agent forces: ",  forceFromAgents);
   //  v2fPrint( "force from walls: ",  forceFromWalls);
-  if( v2fDot(vel, forceFromAgents) < 0 && !panic ){
+  if( v2fDot(vel, forceFromAgents) < 0 && ! panic ){
     stopping = true;
     stoptime = std::rand() % 50;
     v2fMult(vel, 0.0, vel);
@@ -265,7 +267,7 @@ void Agent::calcAgentForce( CrowdObject::CrowdObject * a , v2f ret){
   }
   //add in a slight right-bias if you are headed toward an agent with a direct oncoming or directly same-direction as you
   std::cout << "ang: " << v2fDot( vel, otherVel );
-  if( v2fDot(vel, otherVel) <= MY_EPSILON && v2fDot(vel, otherVel) >= -MY_EPSILON){
+  if( abs( v2fDot(vel, otherVel) ) <= MY_EPSILON && abs( v2fDot(vel, meToYou)) <= MY_EPSILON){
     v2f rforce;
     v2fTangent( vel, rforce );
     //tforce should be zero here
